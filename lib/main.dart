@@ -616,47 +616,43 @@ class _cellzGameState extends State<cellzGame> {
   Widget createPoints(int rows, int colums) {
     //this functions returns the PointsUI objects in a grid view
 
-    return GridView.builder(
-      shrinkWrap: true,
-      itemCount: rows * colums,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 5,
-        crossAxisSpacing: 0.0,
-        mainAxisSpacing: 0.0,
-      ),
-      itemBuilder: (BuildContext context, int index) {
-        return GestureDetector(
-          onTap: () {
-            //check if the point is disabled or not
-            if (allPoints[index].isDisabled == false) {
-              //check if the point is already selected or not
-              if (allPoints[index].isSelected == false) {
-                //check if the point is already marked or not
-                if (allPoints[index].isMarked == false) {
-                  //check if the point is already untouched or not
-                  if (allPoints[index].isUntouched == true) {
-                    //mark the point as selected
-                    setState(() {
-                      allPoints[index].isSelected = true;
-                      allPoints[index].isUntouched = false;
-                      //add the point to the usedPoints list
-                      usedPoints.add(allPoints[index]);
-                    });
-                  }
-                }
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      child: GridView.builder(
+        shrinkWrap: true,
+        itemCount: rows * colums,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: rows,
+          crossAxisSpacing: 0.0,
+          mainAxisSpacing: 0.0,
+        ),
+        itemBuilder: (BuildContext context, int index) {
+          return GestureDetector(
+            onTap: () {
+              //if untoched then make it selected and vice versa
+              if (allPoints[index].isUntouched == true) {
+                setState(() {
+                  allPoints[index].isUntouched = false;
+                  allPoints[index].isSelected = true;
+                });
+              } else {
+                setState(() {
+                  allPoints[index].isUntouched = true;
+                  allPoints[index].isSelected = false;
+                });
               }
-            }
-          },
-          child: Container(
-            //use a margin of 30 if the current index Point has property isSelected == true
+            },
+            child: Container(
+              //use a margin of 30 if the current index Point has property isSelected == true
 
-            margin: (allPoints[index].isSelected == true) ? EdgeInsets.all(30) : EdgeInsets.all(35),
-            child: PointUi(
-              allPoints[index],
+              margin: (allPoints[index].isSelected == true) ? EdgeInsets.all(13) : EdgeInsets.all(15),
+              child: PointUi(
+                allPoints[index],
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
@@ -680,7 +676,7 @@ class _cellzGameState extends State<cellzGame> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  createPoints(5, 5),
+                  createPoints(5, 9),
                 ],
               ),
             ),
