@@ -307,6 +307,8 @@
 // + The should be directly executable and the game should be playable just by me for now as described in the Phase 1 initial details.
 // Now here is what I want you to do: without going into the details of the entire game implementation, I want you to only write down a large list of commented-todos that will make this main.dart fully functional.
 
+// ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors, prefer_const_literals_to_create_immutables
+
 // // TODO: Import necessary Flutter packages.
 // Here are all the essential packages that I have downloaded:
 //   cupertino_icons: ^1.0.2
@@ -317,6 +319,11 @@
 //   fluttertoast: ^8.2.2
 //   flutter_dialogs: ^3.0.0
 //   animations: ^2.0.7
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+
+//global list of pointsUsed
+List<Points> pointsUsed = [];
 
 // TODO: Define the Points class with xCord, yCord, isMarked, isDisabled, and isSelected properties.
 class Points {
@@ -351,23 +358,187 @@ class Points {
     }
     return false;
   }
+
+  bool checkNearby(Points p1, Points p2) {
+    if (p1.xCord == p2.xCord && p1.yCord == p2.yCord) {
+      return false;
+    }
+    if (p1.xCord == p2.xCord && p1.yCord == p2.yCord + 1) {
+      return true;
+    }
+    if (p1.xCord == p2.xCord && p1.yCord == p2.yCord - 1) {
+      return true;
+    }
+    if (p1.xCord == p2.xCord + 1 && p1.yCord == p2.yCord) {
+      return true;
+    }
+    if (p1.xCord == p2.xCord - 1 && p1.yCord == p2.yCord) {
+      return true;
+    }
+    return false;
+  }
+
+  @override
+  String toString() {
+    return 'Points(xCord: $xCord, yCord: $yCord, isMarked: $isMarked, isDisabled: $isDisabled, isSelected: $isSelected)';
+  }
+
+  @override
+  int get hashCode => super.hashCode;
 }
 
 // TODO: Define the Lines class with firstPoint, secondPoint, owner, and lineDirection properties.
 
+class Lines {
+  Points firstPoint;
+  Points secondPoint;
+  GamePlayers owner;
+  LineDirection lineDirection;
+  Lines({required this.firstPoint, required this.secondPoint, required this.owner, required this.lineDirection});
+  void animate(Lines providedLine) {
+    //animates the provided Line ie. Line drawn by ai function
+  }
+  void CheckSquare(Lines providedLine) {
+    //this function will check the square based on the line provided as an argument
+  }
+  @override
+  String toString() {
+    return 'Lines(firstPoint: $firstPoint, secondPoint: $secondPoint, owner: $owner, lineDirection: $lineDirection)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is Lines) {
+      return this.firstPoint == other.firstPoint && this.secondPoint == other.secondPoint;
+    }
+    return false;
+  }
+
+  @override
+  int get hashCode => super.hashCode;
+}
+
 // TODO: Define the LineDirection enum.
+
+enum LineDirection { Horiz, Vert }
 
 // TODO: Define the Square class with L1Horiz, L2Horiz, L1Vert, and L2Vert properties.
 
+class Square {
+  Lines L1Horiz;
+  Lines L2Horiz;
+  Lines L1Vert;
+  Lines L2Vert;
+  Square({required this.L1Horiz, required this.L2Horiz, required this.L1Vert, required this.L2Vert});
+  void checkHorizSquare(Lines horizontalLine) {
+    //This function will check if there is a square above or below the current horizontal line which is //provided as an argument.
+  }
+
+  void checkVertSquare(Lines VerticalLine) {
+    //This function will check if there is a square on the right or left of the current vertical line which is //provided as an argument.
+  }
+
+  @override
+  String toString() {
+    return 'Square(L1Horiz: $L1Horiz, L2Horiz: $L2Horiz, L1Vert: $L1Vert, L2Vert: $L2Vert)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is Square) {
+      return this.L1Horiz == other.L1Horiz &&
+          this.L2Horiz == other.L2Horiz &&
+          this.L1Vert == other.L1Vert &&
+          this.L2Vert == other.L2Vert;
+    }
+    return false;
+  }
+
+  @override
+  int get hashCode => super.hashCode;
+}
+
 // TODO: Define the GameCanvas class with numOfXPoints, numOfYPoints, isGameOver, and movesLeft properties.
+
+class GameCanvas {
+  int? numOfXPoints; // number of points on the x axis.
+  int? numOfYPoints; // number of points on the y axis.
+  static bool? isGameOver; // toCheck if the game is over or not
+  static int? movesLeft;
+  void calculateMovesLeft(int i /*numOfXPoints*/, int j /*numOfYPoints*/) {
+    GameCanvas.movesLeft = (i - 1) * j + (j - 1) * i;
+  }
+
+  void checkVertSquare(Lines VerticalLine) {
+    //This function will check if there is a square on the right or left of the current vertical line which is //provided as an argument.
+  }
+
+  @override
+  String toString() {
+    return 'GameCanvas(numOfXPoints: $numOfXPoints, numOfYPoints: $numOfYPoints, isGameOver: $isGameOver, movesLeft: $movesLeft)';
+  }
+}
 
 // TODO: Define the GamePlayers class with isPlayer, score, numOfLives, linesDrawn, and squaresOwned properties.
 
+class GamePlayers {
+  bool isPlayer = false;
+  int score = 0;
+  int numOfLives = 4;
+  List<Lines> linesDrawn = [];
+  List<Square> squaresOwned = [];
+  void incrementScore() {
+    //increments the score as user completes a square/squares
+    this.score++;
+  }
+
+  void loseLife() {
+    //this.life--;
+    this.numOfLives = this.numOfLives - 1;
+  }
+
+  void addSquares(Square s1) {
+    squaresOwned.add(s1);
+  }
+
+  @override
+  String toString() {
+    return 'GamePlayers(isPlayer: $isPlayer, score: $score, numOfLives: $numOfLives, linesDrawn: $linesDrawn, squaresOwned: $squaresOwned)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is GamePlayers) {
+      return this.isPlayer == other.isPlayer &&
+          this.score == other.score &&
+          this.numOfLives == other.numOfLives &&
+          this.linesDrawn == other.linesDrawn &&
+          this.squaresOwned == other.squaresOwned;
+    }
+    return false;
+  }
+
+  @override
+  int get hashCode => super.hashCode;
+}
+
 // TODO: Create a list of Points objects called allPoints.
+final List allPoints = <Points>[];
 
 // TODO: Create an empty list of used Points objects called usedPoints.
+final List usedPoints = <Points>[];
 
 // TODO: Create a function to createPoints based on rows and columns.
+
+void createPoints(int rows /*numOfXPoints*/, int colums /*numOfYPoints*/) {
+  for (var i = 0; i < rows; i++) {
+    //creates xCord attributes of points objects
+    for (var j = 0; j < colums; j++) {
+      //creates yCord attributes of points objects
+      allPoints.add(Points(xCord: i, yCord: j));
+    }
+  }
+}
 
 // TODO: Plot the Points on the screen based on their coordinates.
 
@@ -428,3 +599,67 @@ class Points {
 // TODO: Test the game thoroughly to identify and fix any issues or bugs.
 
 // TODO: Prepare for Phase 2 by setting up Firebase integration for multiplayer support.
+
+//Keeping all the above points in mind lets start working on the Game implementation
+
+void main() {
+  runApp(cellzGame());
+}
+
+class cellzGame extends StatefulWidget {
+  const cellzGame({Key? key}) : super(key: key);
+
+  @override
+  _cellzGameState createState() => _cellzGameState();
+}
+
+class _cellzGameState extends State<cellzGame> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(useMaterial3: true),
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Cellz Game'),
+        ),
+        body: SafeArea(
+          child: Container(
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text('Player 1'),
+                    Text('Player 2'),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text('Score: 0'),
+                    Text('Score: 0'),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text('Lives: 4'),
+                    Text('Lives: 4'),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('Moves Left: 0'),
+                  ],
+                ),
+                // TODO: Plot the Points on the screen based on their coordinates. using function: createPoints(2,2);
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
