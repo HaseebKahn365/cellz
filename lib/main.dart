@@ -329,12 +329,14 @@ List<Points> pointsUsed = [];
 class Points {
   int xCord;
   int yCord;
+  bool isUntouched; //used to mark the point as outlined container
   bool isMarked; //used to mark the point as bold if already used
   bool isDisabled; //used to avoid selection if point is connected in all four directions
   bool isSelected; //use to mark the point even bolder. When drawing a line
   Points(
       {required this.xCord,
       required this.yCord,
+      this.isUntouched = true,
       this.isSelected = false,
       this.isDisabled = false,
       this.isMarked = false});
@@ -505,104 +507,42 @@ class GamePlayers {
   String toString() {
     return 'GamePlayers(isPlayer: $isPlayer, score: $score, numOfLives: $numOfLives, linesDrawn: $linesDrawn, squaresOwned: $squaresOwned)';
   }
-
-  @override
-  bool operator ==(Object other) {
-    if (other is GamePlayers) {
-      return this.isPlayer == other.isPlayer &&
-          this.score == other.score &&
-          this.numOfLives == other.numOfLives &&
-          this.linesDrawn == other.linesDrawn &&
-          this.squaresOwned == other.squaresOwned;
-    }
-    return false;
-  }
-
-  @override
-  int get hashCode => super.hashCode;
 }
 
 // TODO: Create a list of Points objects called allPoints.
-final List allPoints = <Points>[];
+var allPoints = <Points>[];
 
 // TODO: Create an empty list of used Points objects called usedPoints.
-final List usedPoints = <Points>[];
+List usedPoints = <Points>[];
 
-// TODO: Create a function to createPoints based on rows and columns.
+void main() {
+  // allPoints.addAll([
+  //   Points(xCord: 0, yCord: 0),
+  //   Points(xCord: 0, yCord: 1),
+  //   Points(xCord: 1, yCord: 0),
+  //   Points(xCord: 1, yCord: 1),
+  //   Points(xCord: 0, yCord: 2),
+  //   Points(xCord: 0, yCord: 3),
+  //   Points(xCord: 1, yCord: 2),
+  //   Points(xCord: 1, yCord: 3),
+  //   Points(xCord: 2, yCord: 0),
+  //   Points(xCord: 2, yCord: 1),
+  //   Points(xCord: 3, yCord: 0),
+  //   Points(xCord: 3, yCord: 1),
+  //   Points(xCord: 2, yCord: 2),
+  //   Points(xCord: 2, yCord: 3),
+  //   Points(xCord: 3, yCord: 2),
+  //   Points(xCord: 3, yCord: 3),
 
-void createPoints(int rows /*numOfXPoints*/, int colums /*numOfYPoints*/) {
-  for (var i = 0; i < rows; i++) {
+  // ]);
+  //used a nested loop to create  5x5 points and add them to the allPoints list
+  for (var i = 0; i < 10; i++) {
     //creates xCord attributes of points objects
-    for (var j = 0; j < colums; j++) {
+    for (var j = 0; j < 10; j++) {
       //creates yCord attributes of points objects
       allPoints.add(Points(xCord: i, yCord: j));
     }
   }
-}
-
-// TODO: Plot the Points on the screen based on their coordinates.
-
-// TODO: Implement a Gesture Detector to handle line drawing.
-
-// TODO: Check if the selected Point is disabled before drawing a line.
-
-// TODO: Implement logic to check if the selected Point is nearby for line connection.
-
-// TODO: Add connected Points to the usedPoints list.
-
-// TODO: Create Line objects based on the direction of the line drawn.
-
-// TODO: Add Line objects to the allLines list.
-
-// TODO: Check for squares after drawing a line.
-
-// TODO: Implement logic to check for upper and lower squares for horizontal lines.
-
-// TODO: Implement logic to check for left and right squares for vertical lines.
-
-// TODO: Create Square objects and add them to the squaresOwned list of the current user.
-
-// TODO: Increment the score of the current user if a square is formed.
-
-// TODO: Check if the game is over based on the number of moves left.
-
-// TODO: Display an AlertDialog with game results if the game is over.
-
-// TODO: Implement a function to handle navigation when the game is over.
-
-// TODO: Add the main game loop and user interface.
-
-// TODO: Display remaining moves, current scores, and opponent's information.
-
-// TODO: Implement a function to decrement the life of a player if needed.
-
-// TODO: Implement a function to update the UI based on game state.
-
-// TODO: Create a function to handle back navigation and confirm quitting the game.
-
-// TODO: Set up the initial game state, including creating Points and Lines.
-
-// TODO: Implement Phase 1 testing with a stateful widget.
-
-// TODO: Prepare for transitioning to Provider for state management in Phase 2.
-
-// TODO: Ensure all the defined classes and methods are used correctly in the game logic.
-
-// TODO: Make sure the UI elements and animations are smooth and visually appealing.
-
-// TODO: Handle animations when a square is formed.
-
-// TODO: Ensure that the game runs smoothly without any crashes or errors.
-
-// TODO: Add comments and documentation to your code for clarity.
-
-// TODO: Test the game thoroughly to identify and fix any issues or bugs.
-
-// TODO: Prepare for Phase 2 by setting up Firebase integration for multiplayer support.
-
-//Keeping all the above points in mind lets start working on the Game implementation
-
-void main() {
   runApp(cellzGame());
 }
 
@@ -614,48 +554,135 @@ class cellzGame extends StatefulWidget {
 }
 
 class _cellzGameState extends State<cellzGame> {
+  //Implement Point object in the form of circular container:
+//In this step we will create a container widget which acts a  Point the styling is adjusted base on the properties of the point object which is passed to it.
+  Widget PointUi(Points P) {
+    if (P.isDisabled == true) {
+      return Container(
+        width: 20,
+        height: 20,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.deepPurple[400],
+        ),
+      );
+    } else if (P.isSelected == true) {
+      return Container(
+        width: 25,
+        height: 25,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.deepPurple[500],
+        ),
+      );
+    } else if (P.isMarked == true) {
+      return Container(
+        width: 20,
+        height: 20,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.deepPurple,
+        ),
+      );
+    } else if (P.isUntouched == true) {
+      return Container(
+        width: 20,
+        height: 20,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: Colors.deepPurple,
+            width: 2.0,
+          ),
+        ),
+      );
+    } else {
+      return Container(
+        width: 20,
+        height: 20,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: Colors.deepPurple,
+            width: 4.0,
+          ),
+        ),
+      );
+    }
+  }
+
+  // TODO: Create a function to createPoints based on rows and columns.
+
+  Widget createPoints(int rows, int colums) {
+    //this functions returns the PointsUI objects in a grid view
+
+    return GridView.builder(
+      shrinkWrap: true,
+      itemCount: rows * colums,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 5,
+        crossAxisSpacing: 0.0,
+        mainAxisSpacing: 0.0,
+      ),
+      itemBuilder: (BuildContext context, int index) {
+        return GestureDetector(
+          onTap: () {
+            //check if the point is disabled or not
+            if (allPoints[index].isDisabled == false) {
+              //check if the point is already selected or not
+              if (allPoints[index].isSelected == false) {
+                //check if the point is already marked or not
+                if (allPoints[index].isMarked == false) {
+                  //check if the point is already untouched or not
+                  if (allPoints[index].isUntouched == true) {
+                    //mark the point as selected
+                    setState(() {
+                      allPoints[index].isSelected = true;
+                      allPoints[index].isUntouched = false;
+                      //add the point to the usedPoints list
+                      usedPoints.add(allPoints[index]);
+                    });
+                  }
+                }
+              }
+            }
+          },
+          child: Container(
+            //use a margin of 30 if the current index Point has property isSelected == true
+
+            margin: (allPoints[index].isSelected == true) ? EdgeInsets.all(30) : EdgeInsets.all(35),
+            child: PointUi(
+              allPoints[index],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(useMaterial3: true),
+      //set theme color to deep purple
+      theme: ThemeData(
+        useMaterial3: true,
+        primaryColor: Colors.deepPurple,
+      ),
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Cellz Game'),
+          backgroundColor: Colors.deepPurple,
+          title: Text('Cellz Game', style: TextStyle(color: Colors.white)),
         ),
         body: SafeArea(
           child: Container(
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text('Player 1'),
-                    Text('Player 2'),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text('Score: 0'),
-                    Text('Score: 0'),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text('Lives: 4'),
-                    Text('Lives: 4'),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Moves Left: 0'),
-                  ],
-                ),
-                // TODO: Plot the Points on the screen based on their coordinates. using function: createPoints(2,2);
-              ],
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  createPoints(5, 5),
+                ],
+              ),
             ),
           ),
         ),
