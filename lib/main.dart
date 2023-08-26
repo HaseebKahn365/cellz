@@ -22,8 +22,9 @@ class cellzGame extends StatefulWidget {
 }
 
 class _cellzGameState extends State<cellzGame> {
-  //Implement Point object in the form of circular container:
-//In this step we will create a container widget which acts a  Point the styling is adjusted base on the properties of the point object which is passed to it.
+  // Initialize newLineOffset with Offset.zero for all three elements
+  var newLineOffset = List<Offset>.filled(3, Offset.zero);
+
   Widget PointUi(Points P) {
     if (P.isDisabled == true) {
       return Container(
@@ -79,51 +80,6 @@ class _cellzGameState extends State<cellzGame> {
     }
   }
 
-  // TODO: Create a function to createPoints based on rows and columns.
-
-  Widget createPoints(int rows, int colums) {
-    //this functions returns the PointsUI objects in a grid view
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      child: GridView.builder(
-        shrinkWrap: true,
-        itemCount: rows * colums,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: rows,
-          crossAxisSpacing: 0.0,
-          mainAxisSpacing: 0.0,
-        ),
-        itemBuilder: (BuildContext context, int index) {
-          return GestureDetector(
-            onTap: () {
-              //if untoched then make it selected and vice versa
-              if (allPoints[index].isUntouched == true) {
-                setState(() {
-                  allPoints[index].isUntouched = false;
-                  allPoints[index].isSelected = true;
-                });
-              } else {
-                setState(() {
-                  allPoints[index].isUntouched = true;
-                  allPoints[index].isSelected = false;
-                });
-              }
-            },
-            child: Container(
-              //use a margin of 30 if the current index Point has property isSelected == true
-
-              margin: (allPoints[index].isSelected == true) ? EdgeInsets.all(13) : EdgeInsets.all(15),
-              child: PointUi(
-                allPoints[index],
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -134,18 +90,39 @@ class _cellzGameState extends State<cellzGame> {
         primaryColor: Colors.deepPurple,
       ),
       home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.deepPurple,
-          title: Text('Cellz Game', style: TextStyle(color: Colors.white)),
-        ),
-        body: SafeArea(
-          child: Container(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  createPoints(5, 9),
-                ],
+        // appBar: AppBar(
+        //   backgroundColor: Colors.deepPurple,
+        //   title: Text('Cellz Game', style: TextStyle(color: Colors.white)),
+        // ),
+        body: Center(
+          child: GestureDetector(
+            onPanStart: (details) {
+              final renderObject = context.findRenderObject() as RenderBox;
+              final localPosition = renderObject.globalToLocal(details.globalPosition);
+              //  print('globalPositions ${localPosition}');
+              setState(() {
+                newLineOffset[0] = (localPosition);
+              });
+            },
+            onPanUpdate: (details) {
+              final renderObject = context.findRenderObject() as RenderBox;
+              final localPosition = renderObject.globalToLocal(details.globalPosition);
+              // print(localPosition);
+              setState(() {
+                newLineOffset[1] = (localPosition);
+              });
+            },
+            onPanEnd: (details) {
+              setState(() {
+                newLineOffset[2] = (Offset(0, 0));
+              });
+            },
+            child: CustomPaint(
+              painter: LinePainter(newLineOffset, Colors.deepPurple),
+              size: Size.infinite,
+              child: Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
               ),
             ),
           ),
@@ -153,4 +130,23 @@ class _cellzGameState extends State<cellzGame> {
       ),
     );
   }
+}
+
+class LinePainter extends CustomPainter {
+  LinePainter(this.points, this.color);
+  final List<Offset> points;
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..strokeWidth = 5
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawLine(points[0], points[1], paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

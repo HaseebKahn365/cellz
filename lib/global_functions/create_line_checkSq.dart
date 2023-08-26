@@ -1,5 +1,5 @@
-import 'game_classes.dart';
-import 'lists_of_objects.dart';
+import '../game_classes.dart';
+import '../lists_of_objects.dart';
 
 //create an instance of currentUser:
 final currentUser = GamePlayers(isPlayer: true, score: 0, numOfLives: 4, linesDrawn: [], squaresOwned: []);
