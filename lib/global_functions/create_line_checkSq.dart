@@ -3,23 +3,42 @@ import '../lists_of_objects.dart';
 
 //create an instance of currentUser:
 final currentUser = GamePlayers(isPlayer: true, score: 0, numOfLives: 4, linesDrawn: [], squaresOwned: []);
-//create two instances of Points for testing purposes:
-var p1 = Points(xCord: 1, yCord: 1);
-var p2 = Points(xCord: 1, yCord: 2);
 
 //global list of pointsUsed
 
-Lines? createLine(Points p1, Points p2) {
-  if ((p2.xCord == p1.xCord + 1) || (p2.xCord == p1.xCord - 1)) {
-    return Lines(firstPoint: p1, secondPoint: p2, lineDirection: LineDirection.Horiz, owner: currentUser);
-  } else if ((p2.yCord == p1.yCord + 1) || (p2.yCord == p1.yCord - 1)) {
-    return Lines(firstPoint: p1, secondPoint: p2, lineDirection: LineDirection.Vert, owner: currentUser);
+Lines createLine(Points p1, Points p2) {
+  Lines newLine;
+  if (p1.xCord == p2.xCord) {
+    //check in allPoints where a point matches with p2 and mark that point as selected
+    allPoints.forEach((element) {
+      if (element == p2) {
+        element.isSelected = true;
+      }
+    });
+    newLine = Lines(firstPoint: p1, secondPoint: p2, owner: currentUser, lineDirection: LineDirection.Vert);
+    //add the new line to the list of lines
+    allLines.add(newLine);
+    //also add the new line to the list of lines drawn by the current user
+    currentUser.linesDrawn.add(newLine);
+  } else if (p1.yCord == p2.yCord) {
+    //check in allPoints where a point matches with p2 and mark that point as selected
+    allPoints.forEach((element) {
+      if (element == p2) {
+        element.isSelected = true;
+      }
+    });
+    newLine = Lines(firstPoint: p1, secondPoint: p2, owner: currentUser, lineDirection: LineDirection.Horiz);
+    //add the new line to the list of lines
+    allLines.add(newLine);
+    //also add the new line to the list of lines drawn by the current user
+    currentUser.linesDrawn.add(newLine);
   } else {
-    return null;
+    throw Exception('Invalid Line');
   }
+  return newLine;
 }
 
-final newLine = createLine(p1, p2);
+var newLine;
 
 checkSquare(Lines newLine) {
   allLines.add(newLine);

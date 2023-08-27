@@ -29,7 +29,7 @@ class Points {
       return true;
     }
     //find number of instances of p1 in pointsUsed
-    if (pointsUsed.where((element) => element.xCord == p1.xCord && element.yCord == p1.yCord).length > 3) {
+    if (allPoints.where((element) => element.xCord == p1.xCord && element.yCord == p1.yCord).length > 3) {
       return true;
     }
     return false;

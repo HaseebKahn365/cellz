@@ -1,16 +1,18 @@
+import 'dart:math';
+
+import 'package:cellz/global_functions/create_line_checkSq.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'game_classes.dart';
 import 'lists_of_objects.dart';
 
 void main() {
-  //used a nested loop to create  5x5 points and add them to the allPoints list
-  for (var i = 0; i < 10; i++) {
-    //creates xCord attributes of points objects
-    for (var j = 0; j < 10; j++) {
-      //creates yCord attributes of points objects
-      allPoints.add(Points(xCord: i, yCord: j));
-    }
-  }
+  //create a GameCanvas instance;
+  final currentGame = GameCanvas(numOfXPoints: 2, numOfYPoints: 2);
+  currentGame.calculateMovesLeft(2, 2);
+  print(GameCanvas.movesLeft);
+  GameCanvas.createDots(2, 2);
+
   runApp(cellzGame());
 }
 
@@ -28,40 +30,63 @@ class _cellzGameState extends State<cellzGame> {
   Widget PointUi(Points P) {
     if (P.isDisabled == true) {
       return Container(
-        width: 20,
-        height: 20,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.deepPurple[400],
-        ),
-      );
-    } else if (P.isSelected == true) {
-      return Container(
-        width: 25,
-        height: 25,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.deepPurple[500],
+        margin: EdgeInsets.all(40),
+        height: 40,
+        color: Colors.deepPurple[100],
+        child: Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.deepPurple[400],
+          ),
         ),
       );
     } else if (P.isMarked == true) {
       return Container(
-        width: 20,
-        height: 20,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.deepPurple,
+        margin: EdgeInsets.all(40),
+        height: 40,
+        color: Colors.deepPurple[100],
+        child: Container(
+          margin: EdgeInsets.all(10),
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.deepPurple[500],
+          ),
+        ),
+      );
+    } else if (P.isSelected == true) {
+      return Container(
+        margin: EdgeInsets.all(40),
+        height: 40,
+        color: Colors.deepPurple[100],
+        child: Container(
+          margin: EdgeInsets.all(20),
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.deepPurple,
+          ),
         ),
       );
     } else if (P.isUntouched == true) {
       return Container(
-        width: 20,
-        height: 20,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: Colors.deepPurple,
-            width: 2.0,
+        margin: EdgeInsets.all(40),
+        height: 40,
+        color: Colors.deepPurple[100],
+        child: Container(
+          margin: EdgeInsets.all(20),
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: Colors.deepPurple,
+              width: 2.0,
+            ),
           ),
         ),
       );
@@ -80,6 +105,56 @@ class _cellzGameState extends State<cellzGame> {
     }
   }
 
+  //create dot from the allPoints list and use PainUI to create the UI
+
+  Widget createPoints(int xCount, int yCount) {
+    return Container(
+      height: 300,
+      child: GridView.count(
+        scrollDirection: Axis.horizontal,
+        shrinkWrap: true,
+        crossAxisCount: xCount,
+        children: List.generate(allPoints.length, (index) {
+          return GestureDetector(
+            onPanStart: (details) {
+              // final renderObject = context.findRenderObject() as RenderBox;
+              // final localPosition = renderObject.globalToLocal(details.globalPosition);
+              //  print('globalPositions ${localPosition}');
+
+              setState(() {
+                newLineOffset[0] = (details.globalPosition);
+                allPoints[index].isSelected = true;
+
+                print('You started at point: ${allPoints[index]}');
+              });
+            },
+            onPanUpdate: (details) {
+              // final renderObject = context.findRenderObject() as RenderBox;
+              // final localPosition = renderObject.globalToLocal(details.globalPosition);
+              // print(localPosition);
+              setState(() {
+                newLineOffset[1] = (details.globalPosition);
+              });
+            },
+            onPanEnd: (details) {
+              setState(() {
+                //print the offsets inside the newLineoffset List
+                print(newLineOffset);
+
+                allPoints[index].isSelected = true;
+                //this function will check if the line drawn is valid or not.
+                offsetAnalyzer(newLineOffset[0], newLineOffset[1], allPoints[index] as Points);
+              });
+            },
+            child: PointUi(
+              allPoints[index],
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -90,63 +165,102 @@ class _cellzGameState extends State<cellzGame> {
         primaryColor: Colors.deepPurple,
       ),
       home: Scaffold(
-        // appBar: AppBar(
-        //   backgroundColor: Colors.deepPurple,
-        //   title: Text('Cellz Game', style: TextStyle(color: Colors.white)),
-        // ),
+        appBar: AppBar(
+          backgroundColor: Colors.deepPurple,
+          title: Text('Cellz Game', style: TextStyle(color: Colors.white)),
+        ),
         body: Center(
-          child: GestureDetector(
-            onPanStart: (details) {
-              final renderObject = context.findRenderObject() as RenderBox;
-              final localPosition = renderObject.globalToLocal(details.globalPosition);
-              //  print('globalPositions ${localPosition}');
-              setState(() {
-                newLineOffset[0] = (localPosition);
-              });
-            },
-            onPanUpdate: (details) {
-              final renderObject = context.findRenderObject() as RenderBox;
-              final localPosition = renderObject.globalToLocal(details.globalPosition);
-              // print(localPosition);
-              setState(() {
-                newLineOffset[1] = (localPosition);
-              });
-            },
-            onPanEnd: (details) {
-              setState(() {
-                newLineOffset[2] = (Offset(0, 0));
-              });
-            },
-            child: CustomPaint(
-              painter: LinePainter(newLineOffset, Colors.deepPurple),
-              size: Size.infinite,
-              child: Container(
-                height: MediaQuery.of(context).size.height,
-                width: MediaQuery.of(context).size.width,
-              ),
-            ),
-          ),
+          child: Column(children: [
+            createPoints(2, 2),
+            //animate the container horzontally from left to right: intially it is width: 10, height: 10 then it will be width: 200, height: 10
+            AnimateContainer(),
+          ]),
         ),
       ),
     );
   }
 }
 
-class LinePainter extends CustomPainter {
-  LinePainter(this.points, this.color);
-  final List<Offset> points;
-  final Color color;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 5
-      ..strokeCap = StrokeCap.round;
-
-    canvas.drawLine(points[0], points[1], paint);
+offsetAnalyzer(Offset P1, Offset Q1, Points currentPoint) {
+  //first we need to find the difference between the x-coordinate and y-coordinate of the two offsets
+  //minimum offset coordinate difference is 120
+  //Lets say we have two points P1(x1,y1) and Q1(x2,y2) as two offsets. Then find the difference between x1 and x2 and y1 and y2
+  final xDif = (Q1.dx - P1.dx);
+  final yDif = (Q1.dy - P1.dy);
+  //X-major (Horizontal) line
+  if (xDif.abs() > yDif.abs() && xDif.abs() > 120) {
+    //the Line could be in the right or left direction:
+    //FOR RIGHT LINE:
+    if (xDif > 120) {
+      newLine = createLine(Points(xCord: currentPoint.xCord, yCord: currentPoint.yCord),
+          Points(xCord: currentPoint.xCord + 1, yCord: currentPoint.yCord));
+      print('Horizontal Right created: $newLine');
+    }
+    //FOR LEFT LINE:
+    else if (xDif < -120 && xDif.abs() > 120) {
+      newLine = createLine(
+        Points(xCord: currentPoint.xCord, yCord: currentPoint.yCord),
+        Points(xCord: currentPoint.xCord - 1, yCord: currentPoint.yCord),
+      );
+      print('Horizontal Left created: $newLine');
+      //add the new line to the allLines list if it does not already exists there:
+      if (!allLines.contains(newLine)) {
+        allLines.add(newLine);
+      }
+    }
   }
+  //Y-major (Vertical) line
+  else if (yDif.abs() > xDif.abs() && yDif.abs() > 120) {
+    //the Line could be in the up or down direction:
+    //FOR Down LINE:
+    //we need to be careful here because when we drag from top to bottom the offset.dy increases which means we have to create a newLine under the following conditions:
+    if (yDif > 120) {
+      newLine = createLine(Points(xCord: currentPoint.xCord, yCord: currentPoint.yCord),
+          Points(xCord: currentPoint.xCord, yCord: currentPoint.yCord + 1));
+      print('Vertical Down created: $newLine');
+
+      //add the new line to the allLines list if it does not already exists there:
+      if (!allLines.contains(newLine)) {
+        allLines.add(newLine);
+      }
+    }
+    //FOR UP LINE:
+    else if (yDif < -120) {
+      newLine = createLine(
+        Points(xCord: currentPoint.xCord, yCord: currentPoint.yCord),
+        Points(xCord: currentPoint.xCord, yCord: currentPoint.yCord - 1),
+      );
+      print('Vertical Up created: $newLine');
+      //add the new line to the allLines list if it does not already exists there:
+      if (!allLines.contains(newLine)) {
+        allLines.add(newLine);
+      }
+    }
+  }
+}
+
+class AnimateContainer extends StatefulWidget {
+  const AnimateContainer({super.key});
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  State<AnimateContainer> createState() => _AnimateContainerState();
+}
+
+class _AnimateContainerState extends State<AnimateContainer> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 200,
+      height: 10,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: Colors.deepPurple,
+      ),
+    ).animate().slideX(
+          delay: Duration(seconds: 1),
+          duration: Duration(seconds: 1),
+          curve: Curves.easeIn,
+          end: 200,
+        );
+  }
 }
