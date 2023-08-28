@@ -146,9 +146,14 @@ class _cellzGameState extends State<cellzGame> {
                 offsetAnalyzer(newLineOffset[0], newLineOffset[1], allPoints[index] as Points);
               });
             },
-            child: PointUi(
-              allPoints[index],
-            ),
+            child: Stack(children: [
+              Positioned(
+                child: LineAnimation(),
+              ),
+              PointUi(
+                allPoints[index],
+              ),
+            ]),
           );
         }),
       ),
@@ -173,7 +178,6 @@ class _cellzGameState extends State<cellzGame> {
           child: Column(children: [
             createPoints(2, 2),
             //animate the container horzontally from left to right: intially it is width: 10, height: 10 then it will be width: 200, height: 10
-            AnimateContainer(),
           ]),
         ),
       ),
@@ -238,29 +242,57 @@ offsetAnalyzer(Offset P1, Offset Q1, Points currentPoint) {
     }
   }
 }
+//we need a stack inside a sizedBox and inside a stack there is an animated container. this animated container is positioned at the center left of the stack inside the sizedBox
 
-class AnimateContainer extends StatefulWidget {
-  const AnimateContainer({super.key});
+class LineAnimation extends StatefulWidget {
+  const LineAnimation({super.key});
 
   @override
-  State<AnimateContainer> createState() => _AnimateContainerState();
+  State<LineAnimation> createState() => _LineAnimationState();
 }
 
-class _AnimateContainerState extends State<AnimateContainer> {
+class _LineAnimationState extends State<LineAnimation> {
+  bool isLineCreated = false;
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 200,
-      height: 10,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.deepPurple,
+    return GestureDetector(
+      onTap: () => setState(() {
+        isLineCreated = !isLineCreated;
+      }),
+      child: Container(
+        color: Colors.red[100],
+        height: 30,
+        width: 160,
+        //rotate anticlockwise by 90 degrees
+        //transform: Matrix4.rotationZ(-pi / 2),
+        child:
+            //create a stack inside the sizedBox
+            Stack(
+          children: [
+            //create an animated container inside the stack
+            Positioned(
+              //set the alignment of the animated container to center left
+              left: 0,
+              top: 5,
+
+              child: AnimatedContainer(
+                //set the duration of the animation
+                duration: Duration(milliseconds: 500),
+                //set the height and width of the animated container
+                curve: Curves.decelerate,
+                alignment: Alignment.centerLeft,
+                height: isLineCreated ? 20 : 20,
+                width: isLineCreated ? 160 : 10,
+                //set the color of the animated container
+                decoration: BoxDecoration(
+                  color: Colors.deepPurple,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
-    ).animate().slideX(
-          delay: Duration(seconds: 1),
-          duration: Duration(seconds: 1),
-          curve: Curves.easeIn,
-          end: 200,
-        );
+    );
   }
 }
