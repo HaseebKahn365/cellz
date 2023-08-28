@@ -63,9 +63,10 @@ class _cellzGameState extends State<cellzGame> {
                 //print the offsets inside the newLineoffset List
                 print(newLineOffset);
 
-                allPoints[index].isSelected = true;
+                //allPoints[index].isSelected = true;
                 //this function will check if the line drawn is valid or not.
-                if (!offsetAnalyzer(newLineOffset[0], newLineOffset[1], allPoints[index] as Points)) {
+                //the offset ANALYZER function will return true if in case if it is trying to return null
+                if (!(offsetAnalyzer(newLineOffset[0], newLineOffset[1], allPoints[index] as Points) == null)) {
                   print('Invalid Line');
                   //make the point unselected
                   allPoints[index].isSelected = false;
@@ -106,4 +107,4 @@ class _cellzGameState extends State<cellzGame> {
   }
 }
 
-//we need a stack inside a sizedBox and inside a stack there is an animated container. this animated container is positioned at the center left of the stack inside the sizedBox
+//we have already created an animated container in the line_ui.dart file we just need to call it here properly
