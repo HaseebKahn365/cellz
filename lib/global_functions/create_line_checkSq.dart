@@ -218,5 +218,9 @@ offsetAnalyzer(Offset P1, Offset Q1, Points currentPoint) {
         allLines.add(newLine);
       }
     }
+  } else {
+    //make the selected p1 unselected
+    //use the returned false to make the line unselected
+    return false;
   }
 }

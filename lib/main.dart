@@ -65,7 +65,11 @@ class _cellzGameState extends State<cellzGame> {
 
                 allPoints[index].isSelected = true;
                 //this function will check if the line drawn is valid or not.
-                offsetAnalyzer(newLineOffset[0], newLineOffset[1], allPoints[index] as Points);
+                if (!offsetAnalyzer(newLineOffset[0], newLineOffset[1], allPoints[index] as Points)) {
+                  print('Invalid Line');
+                  //make the point unselected
+                  allPoints[index].isSelected = false;
+                }
               });
             },
             child: PointUi(

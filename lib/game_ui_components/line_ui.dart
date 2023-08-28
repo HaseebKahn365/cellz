@@ -30,6 +30,7 @@ class _LineAnimationState extends State<LineAnimation> {
               //set the alignment of the animated container to center left
               left: 0,
               top: 5,
+              //return this animated container in case if the Lines object has isNew == true
 
               child: AnimatedContainer(
                 //set the duration of the animation
