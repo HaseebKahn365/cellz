@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import '../game_classes.dart';
 import '../lists_of_objects.dart';
 
@@ -158,5 +160,63 @@ checkSquare(Lines newLine) {
       }
 
       break;
+  }
+}
+
+offsetAnalyzer(Offset P1, Offset Q1, Points currentPoint) {
+  //first we need to find the difference between the x-coordinate and y-coordinate of the two offsets
+  //minimum offset coordinate difference is 120
+  //Lets say we have two points P1(x1,y1) and Q1(x2,y2) as two offsets. Then find the difference between x1 and x2 and y1 and y2
+  final xDif = (Q1.dx - P1.dx);
+  final yDif = (Q1.dy - P1.dy);
+  //X-major (Horizontal) line
+  if (xDif.abs() > yDif.abs() && xDif.abs() > 120) {
+    //the Line could be in the right or left direction:
+    //FOR RIGHT LINE:
+    if (xDif > 120) {
+      newLine = createLine(Points(xCord: currentPoint.xCord, yCord: currentPoint.yCord),
+          Points(xCord: currentPoint.xCord + 1, yCord: currentPoint.yCord));
+      print('Horizontal Right created: $newLine');
+    }
+    //FOR LEFT LINE:
+    else if (xDif < -120 && xDif.abs() > 120) {
+      newLine = createLine(
+        Points(xCord: currentPoint.xCord, yCord: currentPoint.yCord),
+        Points(xCord: currentPoint.xCord - 1, yCord: currentPoint.yCord),
+      );
+      print('Horizontal Left created: $newLine');
+      //add the new line to the allLines list if it does not already exists there:
+      if (!allLines.contains(newLine)) {
+        allLines.add(newLine);
+      }
+    }
+  }
+  //Y-major (Vertical) line
+  else if (yDif.abs() > xDif.abs() && yDif.abs() > 120) {
+    //the Line could be in the up or down direction:
+    //FOR Down LINE:
+    //we need to be careful here because when we drag from top to bottom the offset.dy increases which means we have to create a newLine under the following conditions:
+    if (yDif > 120) {
+      newLine = createLine(Points(xCord: currentPoint.xCord, yCord: currentPoint.yCord),
+          Points(xCord: currentPoint.xCord, yCord: currentPoint.yCord + 1));
+      print('Vertical Down created: $newLine');
+
+      //add the new line to the allLines list if it does not already exists there:
+      if (!allLines.contains(newLine)) {
+        allLines.add(newLine);
+      }
+    }
+    //FOR UP LINE:
+    else if (yDif < -120) {
+      newLine = createLine(
+        Points(xCord: currentPoint.xCord, yCord: currentPoint.yCord),
+        Points(xCord: currentPoint.xCord, yCord: currentPoint.yCord - 1),
+      );
+      print('Vertical Up created: $newLine');
+      //add the new line to the allLines list if it does not already exists there:
+      if (!allLines.contains(newLine)) {
+        allLines.add(newLine);
+      }
+    }
   }
 }

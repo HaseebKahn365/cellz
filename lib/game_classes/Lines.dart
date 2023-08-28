@@ -5,7 +5,13 @@ class Lines {
   Points secondPoint;
   GamePlayers owner;
   LineDirection lineDirection;
-  Lines({required this.firstPoint, required this.secondPoint, required this.owner, required this.lineDirection});
+  bool isNew;
+  Lines(
+      {required this.firstPoint,
+      required this.secondPoint,
+      required this.owner,
+      required this.lineDirection,
+      this.isNew = false});
   void animate(Lines providedLine) {
     //animates the provided Line ie. Line drawn by ai function
   }
