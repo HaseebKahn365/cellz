@@ -97,7 +97,7 @@ class _cellzGameState extends State<cellzGame> {
           title: Text('Cellz Game', style: TextStyle(color: Colors.white)),
         ),
         body: Center(
-          child: Column(children: [
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             createPoints(2, 2),
             //animate the container horzontally from left to right: intially it is width: 10, height: 10 then it will be width: 200, height: 10
           ]),
