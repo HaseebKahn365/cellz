@@ -2,6 +2,7 @@ import 'package:cellz/global_functions/create_line_checkSq.dart';
 import 'package:flutter/material.dart';
 
 import 'game_classes.dart';
+import 'game_ui_components/line_ui.dart';
 import 'game_ui_components/point_ui.dart';
 import 'lists_of_objects.dart';
 
@@ -25,13 +26,26 @@ class cellzGame extends StatefulWidget {
 class _cellzGameState extends State<cellzGame> {
   // Initialize newLineOffset with Offset.zero for all three elements
   var newLineOffset = List<Offset>.filled(3, Offset.zero);
+  bool isLineCreated = false;
 
+  @override
+  void initState() {
+    super.initState();
+
+    // Trigger the animation after a delay (e.g., 2 seconds)
+    Future.delayed(Duration(seconds: 2), () {
+      setState(() {
+        isLineCreated = true;
+      });
+    });
+  }
   //create dot from the allPoints list and use PainUI to create the UI
   //use a stack so that the lines will appear below the dots. the lines will have their own ridview
 
   Widget createPoints(int xCount, int yCount) {
     return Container(
       height: 300,
+      color: Colors.red.withOpacity(0),
       child: GridView.count(
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,
@@ -98,8 +112,16 @@ class _cellzGameState extends State<cellzGame> {
         ),
         body: Center(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            createPoints(2, 2),
-            //animate the container horzontally from left to right: intially it is width: 10, height: 10 then it will be width: 200, height: 10
+            //we should create a stack here so that the lines will appear below the dots
+
+            //create a gridview inside the stack
+            Stack(
+              // Set the index of the widget you want to show
+              children: [
+                drawLines(2, 2), // Index 1
+                createPoints(2, 2), // Index 0
+              ],
+            )
           ]),
         ),
       ),
@@ -107,4 +129,4 @@ class _cellzGameState extends State<cellzGame> {
   }
 }
 
-//we have already created an animated container in the line_ui.dart file we just need to call it here properly
+//

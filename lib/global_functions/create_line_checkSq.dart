@@ -17,7 +17,9 @@ Lines createLine(Points p1, Points p2) {
         element.isSelected = true;
       }
     });
-    newLine = Lines(firstPoint: p1, secondPoint: p2, owner: currentUser, lineDirection: LineDirection.Vert);
+    //set the newLine's member isNew to true
+    newLine =
+        Lines(firstPoint: p1, secondPoint: p2, owner: currentUser, lineDirection: LineDirection.Vert, isNew: true);
     //add the new line to the list of lines
     allLines.add(newLine);
     //also add the new line to the list of lines drawn by the current user
@@ -29,7 +31,8 @@ Lines createLine(Points p1, Points p2) {
         element.isSelected = true;
       }
     });
-    newLine = Lines(firstPoint: p1, secondPoint: p2, owner: currentUser, lineDirection: LineDirection.Horiz);
+    newLine =
+        Lines(firstPoint: p1, secondPoint: p2, owner: currentUser, lineDirection: LineDirection.Horiz, isNew: true);
     //add the new line to the list of lines
     allLines.add(newLine);
     //also add the new line to the list of lines drawn by the current user
@@ -40,7 +43,7 @@ Lines createLine(Points p1, Points p2) {
   return newLine;
 }
 
-var newLine;
+Lines? newLine;
 
 checkSquare(Lines newLine) {
   allLines.add(newLine);
