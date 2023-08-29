@@ -110,20 +110,18 @@ class _cellzGameState extends State<cellzGame> {
           backgroundColor: Colors.deepPurple,
           title: Text('Cellz Game', style: TextStyle(color: Colors.white)),
         ),
-        body: Center(
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            //we should create a stack here so that the lines will appear below the dots
+        body: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          //we should create a stack here so that the lines will appear below the dots
 
-            //create a gridview inside the stack
-            Stack(
-              // Set the index of the widget you want to show
-              children: [
-                drawLines(2, 2), // Index 1
-                createPoints(2, 2), // Index 0
-              ],
-            )
-          ]),
-        ),
+          //create a gridview inside the stack
+          Stack(
+            // Set the index of the widget you want to show
+            children: [
+              drawLines(2, 2), // Index 1
+              createPoints(2, 2), // Index 0
+            ],
+          )
+        ]),
       ),
     );
   }

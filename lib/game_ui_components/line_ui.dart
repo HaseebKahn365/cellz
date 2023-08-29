@@ -90,17 +90,15 @@ class _LinePaintingState extends State<LinePainting> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Positioned(
-          child: AnimatedContainer(
-            duration: Duration(milliseconds: 500),
-            curve: Curves.decelerate,
-            alignment: Alignment.centerLeft,
-            height: isLineCreated ? 20 : 20,
-            width: isLineCreated ? 140 : 10,
-            decoration: BoxDecoration(
-              color: Colors.deepPurple,
-              borderRadius: BorderRadius.circular(10),
-            ),
+        AnimatedContainer(
+          duration: Duration(milliseconds: 500),
+          curve: Curves.decelerate,
+          alignment: Alignment.centerLeft,
+          height: isLineCreated ? 20 : 20,
+          width: isLineCreated ? 140 : 10,
+          decoration: BoxDecoration(
+            color: Colors.deepPurple,
+            borderRadius: BorderRadius.circular(10),
           ),
         ),
       ],
