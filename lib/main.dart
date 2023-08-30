@@ -1,3 +1,7 @@
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
+import 'dart:async';
+
 import 'package:cellz/global_functions/create_line_checkSq.dart';
 import 'package:flutter/material.dart';
 
@@ -119,6 +123,80 @@ class _cellzGameState extends State<cellzGame> {
             children: [
               drawLines(2, 2), // Index 1
               createPoints(2, 2), // Index 0
+              /*To draw the lines we first will have to create a container with a stack widget below the points gridview. Then using the stack we will create two more stacks each of which will contain two linear progress indicators, one is horizontal and the other is vertical. The first stack will be wrapped in an Allign widget which will be allrignd to the top left corner.  Just like as follows:
+Stack(
+          children: [
+            Align(
+              alignment: AlignmentDirectional(0, 0),
+              child: Stack(
+                children: [Align(
+                    alignment: AlignmentDirectional(-1, -1),
+The second stack widget will be also layed out in the similar fashion but it will the in the bottom left corner. The two stacks combined will have 4 linear progress indictors which altogether forms four lines. Each of the linear progress indicator should be animated.
+we first have to test this widget. To check out it the layout is proper:
+ */
+              Container(
+                width: 300,
+                height: 300,
+                decoration: BoxDecoration(
+                  color: Colors.red[100],
+                ),
+                child: Stack(
+                  children: [
+                    Align(
+                      alignment: AlignmentDirectional(0, 0),
+                      child: Stack(
+                        children: [
+                          Align(
+                            alignment: AlignmentDirectional(-1, -1),
+                            child:
+                                //i want the stack here containing two linea progress indicators for representing lines
+                                Stack(
+                              children: [
+                                //i want to see the animation from top right to top left please rotate the AnimatedLinearProgressIndicator by 180 degrees anticlockwise
+                                Transform.rotate(
+                                  child: AnimatedLinearProgressIndicator(),
+                                  angle: 180 * 3.14 / 180,
+                                ), //animating from top left to top right corner
+                                //create another one but tranfrom it by 90 degrees clockwise and also align it to the right corner of the container
+                                Transform.rotate(
+                                  angle: 90 * 3.14 / 180,
+                                  child: Align(
+                                    alignment: AlignmentDirectional(1, 1),
+                                    child: AnimatedLinearProgressIndicator(), //from top left to bottom left corner
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          //create another stack here container two linear progress indicators for representing lines but the should 180 degrees anticlockwise and also align it to the right corner of the container
+
+                          Transform.rotate(
+                            angle: 180 * 3.14 / 180,
+                            child: Align(
+                              alignment: AlignmentDirectional(-1, -1),
+                              child:
+                                  //i want the stack here containing two linea progress indicators for representing lines
+                                  Stack(
+                                children: [
+                                  AnimatedLinearProgressIndicator(),
+                                  //create another one but tranfrom it by 90 degrees clockwise and also align it to the right corner of the container
+                                  Transform.rotate(
+                                    angle: 90 * 3.14 / 180,
+                                    child: Align(
+                                      alignment: AlignmentDirectional(1, 1),
+                                      child: AnimatedLinearProgressIndicator(),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           )
         ]),
@@ -127,4 +205,42 @@ class _cellzGameState extends State<cellzGame> {
   }
 }
 
-//
+// a smooth progress indicator
+class AnimatedLinearProgressIndicator extends StatefulWidget {
+  const AnimatedLinearProgressIndicator({Key? key}) : super(key: key);
+
+  @override
+  _AnimatedLinearProgressIndicatorState createState() => _AnimatedLinearProgressIndicatorState();
+}
+
+class _AnimatedLinearProgressIndicatorState extends State<AnimatedLinearProgressIndicator>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<Color?> _colorTween;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 1000));
+    _colorTween =
+        ColorTween(begin: Colors.deepPurpleAccent[100], end: Colors.deepPurpleAccent).animate(_animationController);
+    _animationController.forward();
+    _animationController.addListener(() {
+      if (_animationController.status == AnimationStatus.completed) {}
+      if (_animationController.status == AnimationStatus.dismissed) {
+        _animationController.forward();
+      }
+      setState(() {});
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return LinearProgressIndicator(
+      backgroundColor: Colors.white,
+      valueColor: _colorTween,
+      minHeight: 10,
+      value: _animationController.value,
+    );
+  }
+}
